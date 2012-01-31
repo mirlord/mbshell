@@ -1,0 +1,5 @@
+*.o
+mbshell
+.*.swp
+mbsh
+

@@ -1,0 +1,16 @@
+
+# Write register:
+# REGISTER_NAME = VALUE
+# , where value is:
+# RAW_STRING
+# or
+# $VAR (variable name, starting with $)
+#
+# Read register:
+# $VAR = REGISTER_NAME
+
+Enable = 1
+$en = Enable
+
+# vim: ft=config
+

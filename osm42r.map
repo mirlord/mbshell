@@ -1,0 +1,40 @@
+# modbus-compatible device map
+# This sample is compatible with Onitex OSM-42R
+
+[config]
+dev         = /dev/ttyUSB0
+slave       = 1
+speed       = 57600
+parity      = N # N - none | E - even | O - odd
+timeout     = 1500 # milliseconds
+debug       = 1 # 1 - on, 0 - off
+
+# Do not edit below if you are not 100% sure
+
+[registers]
+# Register specification format:
+# Register_name = address:size
+#
+# where
+# - address = integer value
+# - size    = 8 | 16 | 32
+#
+# sample:
+# Address   = 0:8
+# Size 8 (1 byte) is a default value, which may be omitted.
+Address         = 0
+Baud_Rate_Index = 1
+Enable          = 3
+Direction       = 4
+Steps_Number    = 32768:32
+Command         = 5
+Sleep_Current   = 9
+
+[values]
+STOP        = 0x00
+MOVE        = 0x01
+MOVE_N      = 0x02
+FIND_HOME   = 0x0B
+
+# vim: ft=config
+
