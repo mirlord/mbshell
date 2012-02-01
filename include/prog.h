@@ -2,7 +2,7 @@
 
 // Size-limit for the whole command string, including non-interpreted chars
 #define CMD_BUF_SIZE 2048
-#define REG_VALUE_MAX_SIZE sizeof(long long int)
+#define RVALUE_BUF_L sizeof(long long int) / 2
 #define CMD_READ 0
 #define CMD_WRITE 1
 
@@ -12,7 +12,7 @@ typedef struct {
     char dst[CMD_BUF_SIZE];
     char src[CMD_BUF_SIZE];
     mbreg_t *reg_spec;
-    uint16_t value_buf[REG_VALUE_MAX_SIZE];
+    uint16_t value_buf[RVALUE_BUF_L];
 } mbcmd_t;
 
 char *trim_whitespace(char *str);

@@ -18,7 +18,6 @@ mbreg_t *reg_spec(mbdev_t *dev, mbreg_t *reg, char *reg_name) {
     reg->bits = 8;
     char *sep_idx = index(reg_spec, ':');
     if (sep_idx != NULL) {
-        *sep_idx = 0;
         reg->bits = atoi(++sep_idx);
     }
     reg->addr = atoi(reg_spec);

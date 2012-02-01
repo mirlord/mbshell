@@ -7,7 +7,7 @@ slave       = 1
 speed       = 57600
 parity      = N # N - none | E - even | O - odd
 timeout     = 1500 # milliseconds
-debug       = 1 # 1 - on, 0 - off
+debug       = 0 # 1 - on, 0 - off
 
 # Do not edit below if you are not 100% sure
 

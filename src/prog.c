@@ -91,6 +91,23 @@ mbcmd_t *next_cmd(mbdev_t *dev, mbcmd_t *cmd) {
     return cmd;
 }
 
+uint16_t *lltointa(long long int ll, uint16_t* a, int rc) {
+
+    for (int i = 0; i < RVALUE_BUF_L; i++) {
+        a[RVALUE_BUF_L - i - 1] = (uint16_t) (ll >> 16 * i);
+    }
+    return &(a[RVALUE_BUF_L - rc]);
+}
+
+long long int intatoll(uint16_t* a, int rc) {
+
+    long long int ll = 0;
+    for (int i = 0; i < rc; i++) {
+        ll += (a[i] << 16 * (rc - i - 1));
+    }
+    return ll;
+}
+
 /**
  *
  * - mapped alias
@@ -114,24 +131,25 @@ uint16_t *eval_src_raw_value(mbdev_t *dev, mbcmd_t* cmd) {
         free(reg_src_cfg);
         raw_val = strtol(raw_src_str, NULL, 0);
     }
-    for (int i = 0; i < REG_VALUE_MAX_SIZE / 2; i++) {
-        cmd->value_buf[i] = (uint16_t) (raw_val >> 16 * i);
-    }
     #undef src
-    return cmd->value_buf;
+    return lltointa(raw_val, cmd->value_buf, cmd->reg_spec->nb_regs);
 }
 
 void write_cmd(mbdev_t *dev, mbcmd_t *cmd) {
 
     uint16_t *raw_value = eval_src_raw_value(dev, cmd);
-    for (int i = 0; i < REG_VALUE_MAX_SIZE / 2; i++) {
+    for (int i = 0; i < cmd->reg_spec->nb_regs; i++) {
         /* vals_a[i] = vals_a[0]; */
         MSG("reg[%d]=%d (0x%X)", i, raw_value[i], raw_value[i]);
     }
 
     errno = 0;
-    /* int rc = modbus_write_register(dev->ctx, raw_addr, raw_value[0]); */
-    int rc = modbus_write_registers(dev->ctx, cmd->reg_spec->addr, cmd->reg_spec->nb_regs, raw_value);
+    int rc;
+    if (cmd->reg_spec->nb_regs == 1) {
+        rc = modbus_write_register(dev->ctx, cmd->reg_spec->addr, raw_value[0]);
+    } else {
+        rc = modbus_write_registers(dev->ctx, cmd->reg_spec->addr, cmd->reg_spec->nb_regs, raw_value);
+    }
     if (rc == -1) {
         // Error not always means, that a command was not executed or
         // it's impossible to continue. Just print and go further.
@@ -146,10 +164,11 @@ void read_cmd(mbdev_t *dev, mbcmd_t *cmd) {
     if (rc == -1) {
         MSG("E: %s", modbus_strerror(errno));
     }
+    for (int i = 0; i < rc; i++) {
+        MSG("reg[%d]=%d (0x%X)", i, cmd->value_buf[i], cmd->value_buf[i]);
+    }
     if (strcmp(cmd->dst, "_") == 0) {
-        for (int i = 0; i < rc; i++) {
-            MSG("reg[%d]=%d (0x%X)", i, cmd->value_buf[i], cmd->value_buf[i]);
-        }
+        printf("%s==%llu\n", cmd->src, intatoll(cmd->value_buf, rc));
     }
 }
 
